@@ -8,6 +8,8 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { FindAllRecipesQuery } from './queries/impl/find-all-recipes.query';
 import { GetRecipeQuery } from './queries/impl/get-recipe.query';
+import { NotFoundError } from 'src/domain.errors';
+import { Recipe } from './entities/recipe.entity';
 
 @Injectable()
 export class RecipesService {
@@ -21,8 +23,12 @@ export class RecipesService {
     return this.queryBus.execute(new FindAllRecipesQuery());
   }
 
-  async findOne(id: number) {
-    return this.queryBus.execute(new GetRecipeQuery(id));
+  async findOne(id: number): Promise<Recipe> {
+    const recipe = await this.queryBus.execute(new GetRecipeQuery(id));
+    if (!recipe) {
+      throw new NotFoundError();
+    }
+    return recipe;
   }
 
   async update(id: number, updateRecipeDto: UpdateRecipeDto) {

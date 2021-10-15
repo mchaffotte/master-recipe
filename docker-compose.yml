@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+  db:
+    image: "postgres:14"
+    restart: "always"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "head-chef"
+      POSTGRES_PASSWORD: "hat"
+      APP_DB_USER: "cooker"
+      APP_DB_PASSWORD: "knife"
+      APP_DB_NAME: "recipe"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/  
+
