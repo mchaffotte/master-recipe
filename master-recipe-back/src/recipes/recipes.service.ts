@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+
+import { CreateRecipeCommand } from './commands/impl/create-recipe.command';
+import { UpdateRecipeCommand } from './commands/impl/update-recipe.command';
+import { RemoveRecipeCommand } from './commands/impl/remove-recipe.command';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { FindAllRecipesQuery } from './queries/impl/find-all-recipes.query';
+import { GetRecipeQuery } from './queries/impl/get-recipe.query';
 
 @Injectable()
 export class RecipesService {
-  create(createRecipeDto: CreateRecipeDto) {
-    return 'This action adds a new recipe';
+  constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+  async create(createRecipeDto: CreateRecipeDto) {
+    return this.commandBus.execute(new CreateRecipeCommand(createRecipeDto));
   }
 
-  findAll() {
-    return `This action returns all recipes`;
+  async findAll() {
+    return this.queryBus.execute(new FindAllRecipesQuery());
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
+  async findOne(id: number) {
+    return this.queryBus.execute(new GetRecipeQuery(id));
   }
 
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
+  async update(id: number, updateRecipeDto: UpdateRecipeDto) {
+    return this.commandBus.execute(
+      new UpdateRecipeCommand(id, updateRecipeDto),
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+  async remove(id: number) {
+    return this.commandBus.execute(new RemoveRecipeCommand(id));
   }
 }
