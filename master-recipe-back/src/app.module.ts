@@ -15,6 +15,7 @@ import { RecipesModule } from './recipes/recipes.module';
       entities: ['dist/**/*.entity.js'],
       autoLoadEntities: true,
       synchronize: true,
+      keepConnectionAlive: true,
     }),
     RecipesModule,
   ],
